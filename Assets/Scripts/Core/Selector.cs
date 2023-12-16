@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class Selector : MonoBehaviour
@@ -9,8 +11,12 @@ public class Selector : MonoBehaviour
     private Gizmos gizmos;
 
     private MovementByGizmos movementByGizmos;
+    [SerializeField]
     private GameObject gizmosObject;
-    Vector2 diffrence;
+    [SerializeField]
+    private GameObject[] gizmosTypesObjs;
+    Vector2 diffrence, startScale;
+    float angularDiffrence, startAngle;
     private bool isDragging = false;
 
 
@@ -28,7 +34,7 @@ public class Selector : MonoBehaviour
 
             if (hitInfo.collider != null)
             {
-                Debug.Log("Hit: " + hitInfo.collider.gameObject.name);
+                
                 switch (hitInfo.collider.gameObject.layer)
                 {
                     case 5:
@@ -36,18 +42,32 @@ public class Selector : MonoBehaviour
                         break;
                     case 6:
                         itemSelected = hitInfo.collider.gameObject;
+                        SpawnGizmos(true);
+
+                        gizmosObject.transform.position = new Vector3(itemSelected.transform.position.x, itemSelected.transform.position.y, -1.5f);
                         break;
                     case 7:
-                        isDragging = false;
                         movementByGizmos = hitInfo.collider.gameObject.GetComponent<MovementByGizmos>();
-                        gizmosObject = hitInfo.collider.transform.parent.gameObject;
+                        gizmosObject = hitInfo.collider.transform.root.gameObject;
                         diffrence = Camera.main.ScreenToWorldPoint(Input.mousePosition) - itemSelected.transform.position;
+                        angularDiffrence = Mathf.Atan2(diffrence.y, diffrence.x) * Mathf.Rad2Deg;
+                        startAngle = Quaternion.Angle(Quaternion.identity, itemSelected.transform.rotation);
+                        startScale = itemSelected.transform.localScale;
+
                         isDragging = true;
+
                         break;
                     default:
                         itemSelected = null;
+                        SpawnGizmos(false);
                         break;
                 }
+            }
+            else
+            {
+                
+                itemSelected = null;
+                SpawnGizmos(false);
             }
         }
         if (Input.GetMouseButton(0))
@@ -65,12 +85,62 @@ public class Selector : MonoBehaviour
                     // Values of direction are 0 or 1, so we can use them to multiply the position of the object
                     Vector2 movement = new Vector2(movementByGizmos.direction.x == 1 ? moveBy.x : itemSelected.transform.position.x, movementByGizmos.direction.y == 1 ? moveBy.y : itemSelected.transform.position.y);
 
-                    Debug.Log("Diffrence: " + diffrence + ",  " + movementByGizmos.direction + ",  " + movement);
+                    // Debug.Log("Diffrence: " + diffrence + ",  " + movementByGizmos.direction + ",  " + movement);
                     itemSelected.transform.position = movement;
                     gizmosObject.transform.position = movement;
                 }
+                if(movementByGizmos.gizmoType == myTypeGizmos.Rotate)
+                {
+                    
+                    Vector3 mousePosition = Input.mousePosition;
+                    Vector2 moveBy = Camera.main.ScreenToWorldPoint(mousePosition);
+                    Vector2 movement = new Vector2(moveBy.x - itemSelected.transform.position.x, moveBy.y - itemSelected.transform.position.y);
+                    float angle = startAngle + Mathf.Atan2(movement.y, movement.x) * Mathf.Rad2Deg - angularDiffrence;
+                    //itemSelected.transform.rotation = Quaternion.AngleAxis(angle, Vector3.forward);
+                    itemSelected.transform.rotation = Quaternion.Euler(0, 0, angle);
+                }
+                if(movementByGizmos.gizmoType == myTypeGizmos.Scale)
+                {
+                    Vector3 mousePosition = Input.mousePosition;
+                    Vector2 moveBy = Camera.main.ScreenToWorldPoint(mousePosition);
+                    moveBy -= new Vector2(diffrence.x * movementByGizmos.direction.x, diffrence.y * movementByGizmos.direction.y);
+
+                    // Values of direction are 0 or 1, so we can use them to multiply the position of the object
+                    Vector2 movement = new Vector2(movementByGizmos.direction.x == 1 ? startScale.x + moveBy.x : itemSelected.transform.localScale.x, movementByGizmos.direction.y == 1 ? startScale.y + moveBy.y : itemSelected.transform.localScale.y);
+                    itemSelected.transform.localScale = new Vector3(movement.x, movement.y, 1);
+                    //gizmosObject.transform.localScale = new Vector3(distance, distance, 1);
+                }
             }
         }
+        if (Input.GetMouseButtonUp(0))
+        {
+            isDragging = false;
+            diffrence = Vector2.zero;
+        }
     }
-    
+    void SpawnGizmos(bool spawn)
+    {
+        if (!spawn)
+        {
+            gizmosObject.SetActive(false);
+            return;
+        }
+        gizmosObject.SetActive(true);
+        foreach (var item in gizmosTypesObjs)
+        {
+            item.SetActive(false);
+        }
+        switch (gizmos.gizmoType)
+        {
+            case GTypes.Move:
+                gizmosTypesObjs[0].SetActive(true);
+                break;
+            case GTypes.Rotate:
+                gizmosTypesObjs[1].SetActive(true);
+                break;
+            case GTypes.Scale:
+                gizmosTypesObjs[2].SetActive(true);
+                break;
+        }
+    }
 }
