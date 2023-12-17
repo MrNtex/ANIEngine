@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class Selector : MonoBehaviour
 {
@@ -15,14 +16,19 @@ public class Selector : MonoBehaviour
     private GameObject gizmosObject;
     [SerializeField]
     private GameObject[] gizmosTypesObjs;
-    Vector2 diffrence, startScale;
+    Vector2 diffrence, startScale, startCamPosition;
     float angularDiffrence, startAngle;
-    private bool isDragging = false;
+    private bool isDragging = false, isDraggingCam;
 
 
     public GameObject itemSelected;
 
-    
+    private GameObject cameraMain;
+
+    private void Start()
+    {
+        cameraMain = Camera.main.gameObject;
+    }
 
     // Update is called once per frame
     void Update()
@@ -37,9 +43,6 @@ public class Selector : MonoBehaviour
                 
                 switch (hitInfo.collider.gameObject.layer)
                 {
-                    case 5:
-                        // UI
-                        break;
                     case 6:
                         itemSelected = hitInfo.collider.gameObject;
                         SpawnGizmos(true);
@@ -58,15 +61,18 @@ public class Selector : MonoBehaviour
 
                         break;
                     default:
-                        itemSelected = null;
+                        Debug.Log("Default");
                         SpawnGizmos(false);
                         break;
                 }
             }
             else
             {
-                
-                itemSelected = null;
+                if(EventSystem.current.IsPointerOverGameObject())
+                {
+                    Debug.Log("UI");
+                    return;
+                }
                 SpawnGizmos(false);
             }
         }
@@ -103,8 +109,8 @@ public class Selector : MonoBehaviour
                 {
                     Vector3 mousePosition = Input.mousePosition;
                     Vector2 moveBy = Camera.main.ScreenToWorldPoint(mousePosition);
+                    moveBy -= (Vector2)itemSelected.transform.position;
                     moveBy -= new Vector2(diffrence.x * movementByGizmos.direction.x, diffrence.y * movementByGizmos.direction.y);
-
                     // Values of direction are 0 or 1, so we can use them to multiply the position of the object
                     Vector2 movement = new Vector2(movementByGizmos.direction.x == 1 ? startScale.x + moveBy.x : itemSelected.transform.localScale.x, movementByGizmos.direction.y == 1 ? startScale.y + moveBy.y : itemSelected.transform.localScale.y);
                     itemSelected.transform.localScale = new Vector3(movement.x, movement.y, 1);
@@ -117,8 +123,68 @@ public class Selector : MonoBehaviour
             isDragging = false;
             diffrence = Vector2.zero;
         }
+        if(Input.GetKeyDown(KeyCode.Delete))
+        {
+            if(itemSelected != null)
+            {
+                Destroy(itemSelected);
+                itemSelected = null;
+                SpawnGizmos(false);
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            itemSelected = null;
+            SpawnGizmos(false);
+        }
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            if(itemSelected != null)
+            {
+                itemSelected.transform.rotation = Quaternion.identity;
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.F))
+        {
+            if(itemSelected != null)
+            {
+                itemSelected.transform.localScale = Vector3.one;
+            }
+        }
+        if(Input.GetKeyDown(KeyCode.R))
+        {
+            if(itemSelected != null)
+            {
+                itemSelected.transform.localScale = new Vector3(-itemSelected.transform.localScale.x, itemSelected.transform.localScale.y, itemSelected.transform.localScale.z);
+            }
+        }
+
+        if(Input.GetMouseButtonDown(2))
+        {
+            // Camera movement by mouse
+            if (!isDraggingCam)
+            {
+                Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+                startCamPosition = new Vector3(mousePosition.x, mousePosition.y, cameraMain.transform.position.z);
+            }
+            
+            isDraggingCam = true;
+        }
+        if(Input.GetMouseButton(2))
+        {
+            // Camera movement by mouse
+            Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Debug.Log(mousePosition);
+            cameraMain.transform.position = new Vector3(cameraMain.transform.position.x + startCamPosition.x - mousePosition.x, cameraMain.transform.position.y + startCamPosition.y - mousePosition.y, cameraMain.transform.position.z);
+        }
+        if(Input.GetMouseButtonUp(2))
+        {
+            // Camera movement by mouse
+            Debug.Log("Mouse up");
+            isDraggingCam = false;
+        }
     }
-    void SpawnGizmos(bool spawn)
+    public void SpawnGizmos(bool spawn)
     {
         if (!spawn)
         {
@@ -140,6 +206,7 @@ public class Selector : MonoBehaviour
                 break;
             case GTypes.Scale:
                 gizmosTypesObjs[2].SetActive(true);
+                gizmosTypesObjs[2].transform.rotation = Quaternion.Euler(0, 0, itemSelected.transform.rotation.eulerAngles.z);
                 break;
         }
     }

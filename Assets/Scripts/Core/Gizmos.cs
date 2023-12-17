@@ -9,6 +9,9 @@ public enum GTypes
 }
 public class Gizmos : MonoBehaviour
 {
+    [SerializeField]
+    private Selector selector;
+
     public GTypes gizmoType;
     public void ChangeGizmos(int typeId) {         
         switch ((GTypes)typeId)
@@ -23,5 +26,6 @@ public class Gizmos : MonoBehaviour
                 gizmoType = (GTypes)typeId;
                 break;
         }
+        selector.SpawnGizmos(true);
     }
 }
