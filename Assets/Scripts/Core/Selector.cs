@@ -1,27 +1,36 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.EventSystems;
-
+using UnityEngine.Events;
 public class Selector : MonoBehaviour
 {
     [SerializeField]
     private Gizmos gizmos;
 
     private MovementByGizmos movementByGizmos;
-    [SerializeField]
-    private GameObject gizmosObject;
+
+    public GameObject gizmosObject;
     [SerializeField]
     private GameObject[] gizmosTypesObjs;
     Vector2 diffrence, startScale, startCamPosition;
     float angularDiffrence, startAngle;
     private bool isDragging = false, isDraggingCam;
 
+    private bool isMultipleSelect = false;
+    private Vector2[] multipleSelectPositions = new Vector2[2];
 
-    public GameObject itemSelected;
+    public static GameObject itemSelected;
+    [SerializeField]
+    private Inspector inspector;
+    [SerializeField]
+    private TransformComp transformComp;
+
+    private GameObject itemSelectedPivot;
 
     private GameObject cameraMain;
 
@@ -44,7 +53,7 @@ public class Selector : MonoBehaviour
                 switch (hitInfo.collider.gameObject.layer)
                 {
                     case 6:
-                        itemSelected = hitInfo.collider.gameObject;
+                        ItemSelectedChanged(hitInfo.collider.gameObject);
                         SpawnGizmos(true);
 
                         gizmosObject.transform.position = new Vector3(itemSelected.transform.position.x, itemSelected.transform.position.y, -1.5f);
@@ -61,8 +70,8 @@ public class Selector : MonoBehaviour
 
                         break;
                     default:
-                        Debug.Log("Default");
                         SpawnGizmos(false);
+                        ItemSelectedChanged(null);
                         break;
                 }
             }
@@ -70,10 +79,20 @@ public class Selector : MonoBehaviour
             {
                 if(EventSystem.current.IsPointerOverGameObject())
                 {
-                    Debug.Log("UI");
                     return;
                 }
                 SpawnGizmos(false);
+                ItemSelectedChanged(null);
+                if (itemSelectedPivot != null)
+                {
+                    itemSelectedPivot.transform.DetachChildren();
+
+                    Destroy(itemSelectedPivot);
+                    ItemSelectedChanged(null);
+                    itemSelectedPivot = null;
+                }
+                isMultipleSelect = true;
+                multipleSelectPositions[0] = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             }
         }
         if (Input.GetMouseButton(0))
@@ -116,12 +135,71 @@ public class Selector : MonoBehaviour
                     itemSelected.transform.localScale = new Vector3(movement.x, movement.y, 1);
                     //gizmosObject.transform.localScale = new Vector3(distance, distance, 1);
                 }
+                transformComp.UpdateTransform(itemSelected);
+            }
+            else if (isMultipleSelect)
+            {
+                multipleSelectPositions[1] = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             }
         }
         if (Input.GetMouseButtonUp(0))
         {
             isDragging = false;
             diffrence = Vector2.zero;
+            if (Vector2.Distance(multipleSelectPositions[0], multipleSelectPositions[1]) > 0.5f) 
+            {
+                Vector2[] positions = new Vector2[2];
+                positions[0] = multipleSelectPositions[0];
+                positions[1] = multipleSelectPositions[1];
+                multipleSelectPositions[0] = Vector2.zero;
+                multipleSelectPositions[1] = Vector2.zero;
+                isMultipleSelect = false;
+                GameObject[] objects = GameObject.FindGameObjectsWithTag("Selectable");
+                // Calculate the bottom-left corner
+                Vector2 bottomLeft = new Vector2(Mathf.Min(positions[0].x, positions[1].x), Mathf.Min(positions[0].y, positions[1].y));
+
+                // Calculate the size
+                Vector2 size = new Vector2(Mathf.Abs(positions[0].x - positions[1].x), Mathf.Abs(positions[0].y - positions[1].y));
+
+                // Create the Rect
+                Rect selectionRect = new Rect(bottomLeft, size);
+
+                itemSelectedPivot = new GameObject();
+                List<GameObject> selectedObjects = new List<GameObject>();
+                foreach (var item in objects)
+                {
+                    if (selectionRect.Contains(item.transform.position))
+                    {
+                        selectedObjects.Add(item);
+                        //item.transform.SetParent(itemSelectedPivot.transform);
+                    }
+                }
+                if(selectedObjects.Count > 0)
+                {
+                    Vector2 center = Vector2.zero;
+                    foreach (GameObject child in selectedObjects)
+                    {
+                        center += (Vector2)child.transform.position;
+                        
+                    }
+                    center = new Vector2(center.x/ selectedObjects.Count, center.y/ selectedObjects.Count);
+
+                    itemSelected = itemSelectedPivot;
+                    SpawnGizmos(true);
+                    gizmosObject.transform.position = new Vector3(center.x, center.y, -1.5f);
+                    itemSelectedPivot.transform.position = new Vector3(center.x, center.y, itemSelectedPivot.transform.position.z);
+                    foreach (GameObject child in selectedObjects)
+                    {
+                        child.transform.SetParent(itemSelectedPivot.transform);
+                    }
+                }
+                else
+                {
+                    // Nothing was selected :c
+                    Destroy(itemSelectedPivot);
+                }
+                
+            }
         }
         if(Input.GetKeyDown(KeyCode.Delete))
         {
@@ -174,13 +252,11 @@ public class Selector : MonoBehaviour
         {
             // Camera movement by mouse
             Vector3 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-            Debug.Log(mousePosition);
             cameraMain.transform.position = new Vector3(cameraMain.transform.position.x + startCamPosition.x - mousePosition.x, cameraMain.transform.position.y + startCamPosition.y - mousePosition.y, cameraMain.transform.position.z);
         }
         if(Input.GetMouseButtonUp(2))
         {
             // Camera movement by mouse
-            Debug.Log("Mouse up");
             isDraggingCam = false;
         }
     }
@@ -209,5 +285,10 @@ public class Selector : MonoBehaviour
                 gizmosTypesObjs[2].transform.rotation = Quaternion.Euler(0, 0, itemSelected.transform.rotation.eulerAngles.z);
                 break;
         }
+    }
+    void ItemSelectedChanged(GameObject item)
+    {
+        itemSelected = item;
+        inspector.UpdateInspector(item);
     }
 }
