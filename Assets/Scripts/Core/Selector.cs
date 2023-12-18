@@ -70,6 +70,15 @@ public class Selector : MonoBehaviour
 
                         isDragging = true;
 
+                        ObjectBehaviour objectBehaviour = itemSelected.GetComponent<ObjectBehaviour>();
+                        if (objectBehaviour == null)
+                        {
+                            //Invalid object
+                            Debug.Log("Tried to add a component to an object without ObjectBehaviour script");
+                            return;
+                        }
+                        objectBehaviour.ToggleRigidbody(false);
+
                         break;
                     default:
                         SpawnGizmos(false);
@@ -152,6 +161,20 @@ public class Selector : MonoBehaviour
         {
             isDragging = false;
             diffrence = Vector2.zero;
+
+            if(itemSelected != null)
+            {
+                ObjectBehaviour objectBehaviour = itemSelected.GetComponent<ObjectBehaviour>();
+                if (objectBehaviour == null)
+                {
+                    //Invalid object
+                    Debug.Log("Tried to add a component to an object without ObjectBehaviour script");
+                    return;
+                }
+                objectBehaviour.ToggleRigidbody(true);
+                objectBehaviour.ResetRB();
+            }
+            
 
             lineRenderer.positionCount = 0;
             isMultipleSelect = false;
@@ -318,5 +341,43 @@ public class Selector : MonoBehaviour
     {
         itemSelected = item;
         inspector.UpdateInspector(item);
+        if(itemSelected != null)
+        {
+            ObjectBehaviour objectBehaviour = itemSelected.GetComponent<ObjectBehaviour>();
+            if (objectBehaviour == null)
+            {
+                //Invalid object
+                Debug.Log("Tried to add a component to an object without ObjectBehaviour script");
+                return;
+            }
+            objectBehaviour.ToggleRigidbody(true);
+            objectBehaviour.ResetRB();
+        }
+        
+    }
+    public void AddComponentToItem(int idx)
+    {
+        if(itemSelected == null)
+        {
+            Debug.Log("Tried to add a component to a null object");
+            return;
+        }
+        ObjectBehaviour objectBehaviour = itemSelected.GetComponent<ObjectBehaviour>();
+        if(objectBehaviour == null)
+        {
+            //Invalid object
+            Debug.Log("Tried to add a component to an object without ObjectBehaviour script");
+            return;
+        }
+        switch (idx)
+        {
+            case 0:
+                objectBehaviour.ToggleRigidbody();
+                break;
+            case 1:
+                objectBehaviour.ToggleCollider();
+                break;
+        }
+        ItemSelectedChanged(itemSelected);
     }
 }
