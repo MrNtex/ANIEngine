@@ -105,4 +105,20 @@ public class Inspector : MonoBehaviour
         colorPreview.color = c;
         Selector.itemSelected.GetComponent<SpriteRenderer>().color = c;
     }
+    public void UpdateBodyType(int index)
+    {
+        objectBehaviour.rb.bodyType = (RigidbodyType2D)index;
+    }
+    public void UpdateMass()
+    {
+        objectBehaviour.rb.mass = float.Parse(mass.text);
+    }
+    public void UpdateLinearDrag()
+    {
+        objectBehaviour.rb.drag = float.Parse(linearDrag.text);
+    }
+    public void UpdateAngularDrag()
+    {
+        objectBehaviour.rb.angularDrag = float.Parse(angularDrag.text);
+    }
 }
