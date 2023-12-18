@@ -23,6 +23,7 @@ public class Selector : MonoBehaviour
 
     private bool isMultipleSelect = false;
     private Vector2[] multipleSelectPositions = new Vector2[2];
+    private LineRenderer lineRenderer;
 
     public static GameObject itemSelected;
     [SerializeField]
@@ -37,6 +38,7 @@ public class Selector : MonoBehaviour
     private void Start()
     {
         cameraMain = Camera.main.gameObject;
+        lineRenderer = GetComponent<LineRenderer>();
     }
 
     // Update is called once per frame
@@ -93,6 +95,10 @@ public class Selector : MonoBehaviour
                 }
                 isMultipleSelect = true;
                 multipleSelectPositions[0] = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+
+                // Initialize the line renderer
+                lineRenderer.positionCount = 4;
+                lineRenderer.loop = true; // Connects the last point to the first
             }
         }
         if (Input.GetMouseButton(0))
@@ -146,6 +152,9 @@ public class Selector : MonoBehaviour
         {
             isDragging = false;
             diffrence = Vector2.zero;
+
+            lineRenderer.positionCount = 0;
+            isMultipleSelect = false;
             if (Vector2.Distance(multipleSelectPositions[0], multipleSelectPositions[1]) > 0.5f) 
             {
                 Vector2[] positions = new Vector2[2];
@@ -153,7 +162,7 @@ public class Selector : MonoBehaviour
                 positions[1] = multipleSelectPositions[1];
                 multipleSelectPositions[0] = Vector2.zero;
                 multipleSelectPositions[1] = Vector2.zero;
-                isMultipleSelect = false;
+                
                 GameObject[] objects = GameObject.FindGameObjectsWithTag("Selectable");
                 // Calculate the bottom-left corner
                 Vector2 bottomLeft = new Vector2(Mathf.Min(positions[0].x, positions[1].x), Mathf.Min(positions[0].y, positions[1].y));
@@ -258,6 +267,25 @@ public class Selector : MonoBehaviour
         {
             // Camera movement by mouse
             isDraggingCam = false;
+        }
+
+        if(isMultipleSelect && Mathf.Abs(multipleSelectPositions[0].x - multipleSelectPositions[1].x) > .01f && Mathf.Abs(multipleSelectPositions[0].y - multipleSelectPositions[1].y) > .01f)
+        {
+            // Calculate the bottom-left corner
+            Vector2 bottomLeft = new Vector2(Mathf.Min(multipleSelectPositions[0].x, multipleSelectPositions[1].x), Mathf.Min(multipleSelectPositions[0].y, multipleSelectPositions[1].y));
+
+            // Calculate the size
+            Vector2 size = new Vector2(Mathf.Abs(multipleSelectPositions[0].x - multipleSelectPositions[1].x), Mathf.Abs(multipleSelectPositions[0].y - multipleSelectPositions[1].y));
+
+            // Create the Rect
+            Rect selectionRect = new Rect(bottomLeft, size);
+
+            // Draw the Rect on the screen
+            //GUI.Box(selectionRect, "");
+            lineRenderer.SetPosition(0, new Vector3(selectionRect.xMin, selectionRect.yMin, -1));
+            lineRenderer.SetPosition(1, new Vector3(selectionRect.xMax, selectionRect.yMin, -1));
+            lineRenderer.SetPosition(2, new Vector3(selectionRect.xMax, selectionRect.yMax, -1));
+            lineRenderer.SetPosition(3, new Vector3(selectionRect.xMin, selectionRect.yMax, -1));
         }
     }
     public void SpawnGizmos(bool spawn)
