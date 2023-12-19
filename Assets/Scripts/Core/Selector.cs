@@ -35,6 +35,7 @@ public class Selector : MonoBehaviour
 
     private GameObject cameraMain;
 
+    private bool parentSelected;
     private void Start()
     {
         cameraMain = Camera.main.gameObject;
@@ -74,7 +75,7 @@ public class Selector : MonoBehaviour
                         if (objectBehaviour == null)
                         {
                             //Invalid object
-                            Debug.Log("Tried to add a component to an object without ObjectBehaviour script");
+                            //Debug.Log("Tried to add a component to an object without ObjectBehaviour script");
                             return;
                         }
                         objectBehaviour.ToggleRigidbody(false);
@@ -83,6 +84,7 @@ public class Selector : MonoBehaviour
                     default:
                         SpawnGizmos(false);
                         ItemSelectedChanged(null);
+                        parentSelected = false;
                         break;
                 }
             }
@@ -92,6 +94,7 @@ public class Selector : MonoBehaviour
                 {
                     return;
                 }
+                parentSelected = false;
                 SpawnGizmos(false);
                 ItemSelectedChanged(null);
                 if (itemSelectedPivot != null)
@@ -202,7 +205,15 @@ public class Selector : MonoBehaviour
                 {
                     if (selectionRect.Contains(item.transform.position))
                     {
-                        selectedObjects.Add(item);
+                        GameObject parentObj = item.GetComponent<ObjectBehaviour>().myParent;
+                        if (parentObj == null)
+                        {
+                            selectedObjects.Add(item);
+                        }
+                        else if(!selectedObjects.Contains(parentObj))
+                        {
+                            selectedObjects.Add(parentObj);
+                        }
                         //item.transform.SetParent(itemSelectedPivot.transform);
                     }
                 }
@@ -344,6 +355,13 @@ public class Selector : MonoBehaviour
         if(itemSelected != null)
         {
             ObjectBehaviour objectBehaviour = itemSelected.GetComponent<ObjectBehaviour>();
+            if(objectBehaviour.myParent != null && !parentSelected)
+            {
+                ItemSelectedChanged(objectBehaviour.myParent);
+                parentSelected = true;
+                return;
+            }
+            parentSelected = false;
             if (objectBehaviour == null)
             {
                 //Invalid object
@@ -379,5 +397,51 @@ public class Selector : MonoBehaviour
                 break;
         }
         ItemSelectedChanged(itemSelected);
+    }
+
+    public void Concatenate()
+    {
+        if(itemSelectedPivot == null)
+        {
+            if(itemSelected.GetComponent<ObjectBehaviour>().amIParent)
+            {
+                //Deconcatenate
+                foreach(Transform child in itemSelected.transform)
+                {
+                    child.gameObject.GetComponent<ObjectBehaviour>().SetParent(null);
+                }
+                itemSelected.transform.DetachChildren();
+                Destroy(itemSelected);
+                SpawnGizmos(false);
+                return;
+            }
+            Debug.Log("Tried to concatenate a null object");
+            return;
+        }
+        if(itemSelectedPivot.transform.childCount < 2)
+        {
+            GameObject potentialParent = itemSelectedPivot.transform.GetChild(0).gameObject;
+            if (potentialParent.GetComponent<ObjectBehaviour>().amIParent)
+            {
+                //Deconcatenate
+                foreach (Transform child in itemSelected.transform)
+                {
+                    child.gameObject.GetComponent<ObjectBehaviour>().SetParent(null);
+                }
+                potentialParent.transform.DetachChildren();
+                Destroy(potentialParent);
+                SpawnGizmos(false);
+                return;
+            }
+            Debug.Log("Tried to concatenate an object with less than 2 children");
+            return;
+        }
+        foreach(Transform child in itemSelectedPivot.transform)
+        {
+            child.gameObject.GetComponent<ObjectBehaviour>().SetParent(itemSelectedPivot);
+        }
+        ObjectBehaviour ob = itemSelectedPivot.AddComponent<ObjectBehaviour>();
+        ob.amIParent = true;
+        itemSelectedPivot = null;
     }
 }

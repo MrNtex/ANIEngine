@@ -10,6 +10,10 @@ public class ObjectBehaviour : MonoBehaviour
 
     public Rigidbody2D rb;
 
+    public GameObject myParent;
+
+    public bool amIParent = false;
+
     public void ToggleCollider()
     {
         GetComponent<Collider2D>().isTrigger = colliderEnabled;
@@ -32,5 +36,10 @@ public class ObjectBehaviour : MonoBehaviour
             return;
         rb.velocity = Vector2.zero;
         rb.angularVelocity = 0;
+    }
+
+    public void SetParent(GameObject parent)
+    {
+        myParent = parent;
     }
 }
