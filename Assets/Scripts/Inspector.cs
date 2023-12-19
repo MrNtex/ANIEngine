@@ -20,7 +20,7 @@ public class Inspector : MonoBehaviour
     private TMP_InputField[] colorInputs;
     // Start is called before the first frame update
     [SerializeField]
-    private TMP_Dropdown bodyType;
+    private TMP_Dropdown bodyType, colliderType;
     [SerializeField]
     private TMP_InputField mass, linearDrag, angularDrag;
 
@@ -34,11 +34,13 @@ public class Inspector : MonoBehaviour
     public void UpdateInspector(GameObject source)
     {
         transformComp.UpdateTransform(source);
+
+        rigidbodyInspector.SetActive(false);
+        colliderInspector.SetActive(false);
+        spriteInspector.SetActive(false);
+
         if (source == null)
         { 
-            rigidbodyInspector.SetActive(false);
-            colliderInspector.SetActive(false);
-            spriteInspector.SetActive(false);
             return;
         }
 
@@ -88,6 +90,7 @@ public class Inspector : MonoBehaviour
         if(colorRGB > 1)
         {
             colorRGB = 1;
+            colorInputs[index].text = "255";
         }
         else if(colorRGB < 0)
         {
@@ -109,9 +112,10 @@ public class Inspector : MonoBehaviour
         colorPreview.color = c;
         Selector.itemSelected.GetComponent<SpriteRenderer>().color = c;
     }
-    public void UpdateBodyType(int index)
+    public void UpdateBodyType()
     {
-        objectBehaviour.rb.bodyType = (RigidbodyType2D)index;
+        Debug.Log(bodyType.value);
+        objectBehaviour.rb.bodyType = (RigidbodyType2D)bodyType.value;
     }
     public void UpdateMass()
     {
@@ -124,5 +128,17 @@ public class Inspector : MonoBehaviour
     public void UpdateAngularDrag()
     {
         objectBehaviour.rb.angularDrag = float.Parse(angularDrag.text);
+    }
+
+    public void SetColliderType()
+    {
+        if (colliderType.value == 0)
+        {
+            objectBehaviour.GetComponent<Collider2D>().isTrigger = false;
+        }
+        else
+        {
+            objectBehaviour.GetComponent<Collider2D>().isTrigger = true;
+        }
     }
 }

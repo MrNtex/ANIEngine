@@ -12,6 +12,7 @@ public class ObjectBehaviour : MonoBehaviour
 
     public void ToggleCollider()
     {
+        GetComponent<Collider2D>().isTrigger = colliderEnabled;
         colliderEnabled = !colliderEnabled;
     }
     public void ToggleRigidbody()
