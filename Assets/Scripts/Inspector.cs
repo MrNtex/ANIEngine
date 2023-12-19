@@ -80,6 +80,10 @@ public class Inspector : MonoBehaviour
     public void UpdateColor(int index)
     {
         SpriteRenderer spriteRenderer = Selector.itemSelected.GetComponent<SpriteRenderer>();
+        if(colorInputs[index].text == "")
+        {
+            return;
+        }
         float colorRGB = float.Parse(colorInputs[index].text)/255;
         if(colorRGB > 1)
         {
