@@ -10,6 +10,8 @@ using UnityEngine.Events;
 public class Selector : MonoBehaviour
 {
     [SerializeField]
+    private GameObject projectSettings;
+    [SerializeField]
     private Gizmos gizmos;
 
     private MovementByGizmos movementByGizmos;
@@ -35,6 +37,8 @@ public class Selector : MonoBehaviour
 
     private GameObject cameraMain;
 
+
+    
     private bool parentSelected;
     private void Start()
     {
@@ -443,5 +447,10 @@ public class Selector : MonoBehaviour
         ObjectBehaviour ob = itemSelectedPivot.AddComponent<ObjectBehaviour>();
         ob.amIParent = true;
         itemSelectedPivot = null;
+    }
+
+    public void ShowProjectSettings()
+    {
+        projectSettings.SetActive(true);
     }
 }
