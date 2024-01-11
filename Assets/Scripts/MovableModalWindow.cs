@@ -3,6 +3,8 @@ using UnityEngine.EventSystems;
 
 public class MovableModalWindow : MonoBehaviour, IDragHandler, IBeginDragHandler
 {
+    [SerializeField] private RectTransform dragArea;
+
     private RectTransform rectTransform;
     private Canvas canvas;
     private Vector2 offset;
@@ -15,14 +17,24 @@ public class MovableModalWindow : MonoBehaviour, IDragHandler, IBeginDragHandler
 
     public void OnBeginDrag(PointerEventData eventData)
     {
-        RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out offset);
+        if (RectTransformUtility.RectangleContainsScreenPoint(dragArea, eventData.position, eventData.pressEventCamera))
+        {
+            RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out offset);
+        }
+        else
+        {
+            offset = Vector2.zero;
+        }
     }
 
     public void OnDrag(PointerEventData eventData)
     {
-        if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, eventData.pressEventCamera, out Vector2 localPoint))
+        if (offset != Vector2.zero)
         {
-            rectTransform.localPosition = localPoint - offset;
+            if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, eventData.pressEventCamera, out Vector2 localPoint))
+            {
+                rectTransform.localPosition = localPoint - offset;
+            }
         }
     }
 }
