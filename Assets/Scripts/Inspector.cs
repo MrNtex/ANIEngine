@@ -114,7 +114,6 @@ public class Inspector : MonoBehaviour
     }
     public void UpdateBodyType()
     {
-        Debug.Log(bodyType.value);
         objectBehaviour.rb.bodyType = (RigidbodyType2D)bodyType.value;
     }
     public void UpdateMass()
