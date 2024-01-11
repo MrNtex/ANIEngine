@@ -44,7 +44,7 @@ public class ProjectSettingsMng : MonoBehaviour
         bgColorPreview.color = color;
 
         gravity.text = Physics2D.gravity.y.ToString();
-        timeScale.text = Time.timeScale.ToString();
+        timeScale.text = PlayMode.timeScaleCashed.ToString();
         camSize.text = mainCamera.orthographicSize.ToString();
 
     }
@@ -64,7 +64,11 @@ public class ProjectSettingsMng : MonoBehaviour
         mainCamera.backgroundColor = new Color(r, g, b);
 
         Physics2D.gravity = new Vector2(0, float.Parse(gravity.text));
-        Time.timeScale = float.Parse(timeScale.text);
+        PlayMode.timeScaleCashed = float.Parse(timeScale.text);
+        if(Time.timeScale != 0)
+        {
+            Time.timeScale = PlayMode.timeScaleCashed;
+        }
 
         mainCamera.orthographicSize = float.Parse(camSize.text);
     }

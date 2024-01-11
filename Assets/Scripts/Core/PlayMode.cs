@@ -8,8 +8,11 @@ public class PlayMode : MonoBehaviour
     Image playButton;
     [SerializeField]
     private Color[] colors;
+
+    public static float timeScaleCashed;
     private void Start()
     {
+        timeScaleCashed = Time.timeScale;
         playButton = GetComponent<Image>();
         Play();
     }
@@ -17,11 +20,12 @@ public class PlayMode : MonoBehaviour
     {
         if(Time.timeScale == 0)
         {
-            Time.timeScale = 1;
+            Time.timeScale = timeScaleCashed;
             playButton.color = colors[0];
         }
         else
         {
+            timeScaleCashed = Time.timeScale;
             Time.timeScale = 0;
             playButton.color = colors[1];
         }
