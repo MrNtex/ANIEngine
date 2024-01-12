@@ -23,6 +23,8 @@ public class ProjectSettingsMng : MonoBehaviour
     private TMP_InputField camSize;
 
     private bool basicUpdate = true;
+
+    public ColorWheel colorWheel;
     // Start is called before the first frame update
     private void Awake()
     {
@@ -99,5 +101,25 @@ public class ProjectSettingsMng : MonoBehaviour
             return value >= 0 && value <= 255;
         }
         return false;
+    }
+    public void ColorWheelUsage()
+    {
+        if (colorWheel != null)
+        {
+            colorWheel.OnColorChanged += HandleColorChange;
+        }
+    }
+    public void DisableColorWheel()
+    {
+        colorWheel.OnColorChanged -= HandleColorChange;
+    }
+    private void HandleColorChange(Color newColor)
+    {
+        mainCamera.backgroundColor = newColor;
+        UpdateData();
+    }
+    private void OnDisable()
+    {
+        DisableColorWheel();
     }
 }

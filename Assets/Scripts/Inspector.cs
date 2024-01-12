@@ -27,6 +27,7 @@ public class Inspector : MonoBehaviour
     [SerializeField]
     private GameObject rigidbodyInspector, colliderInspector, spriteInspector;
     // Update is called once per frame
+    public ColorWheel colorWheel;
     private void Start()
     {
         transformComp = GetComponent<TransformComp>();
@@ -112,6 +113,16 @@ public class Inspector : MonoBehaviour
         colorPreview.color = c;
         Selector.itemSelected.GetComponent<SpriteRenderer>().color = c;
     }
+    public void UpdateColorByColorWheel(Color c)
+    {
+        SpriteRenderer spriteRenderer = Selector.itemSelected.GetComponent<SpriteRenderer>();
+        colorPreview.color = c;
+        Selector.itemSelected.GetComponent<SpriteRenderer>().color = c;
+        colorInputs[0].text = (c.r * 255).ToString();
+        colorInputs[1].text = (c.g * 255).ToString();
+        colorInputs[2].text = (c.b * 255).ToString();
+
+    }
     public void UpdateBodyType()
     {
         objectBehaviour.rb.bodyType = (RigidbodyType2D)bodyType.value;
@@ -139,5 +150,25 @@ public class Inspector : MonoBehaviour
         {
             objectBehaviour.GetComponent<Collider2D>().isTrigger = true;
         }
+    }
+    public void ColorWheelUsage()
+    {
+        if (colorWheel != null)
+        {
+            colorWheel.OnColorChanged += HandleColorChange;
+        }
+    }
+    public void DisableColorWheel()
+    {
+        colorWheel.OnColorChanged -= HandleColorChange;
+    }
+    private void HandleColorChange(Color newColor)
+    {
+        UpdateColorByColorWheel(newColor);
+        
+    }
+    private void OnDisable()
+    {
+        DisableColorWheel();
     }
 }
