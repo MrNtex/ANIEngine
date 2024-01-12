@@ -121,6 +121,7 @@ public class Selector : MonoBehaviour
         {
             if (itemSelected != null && movementByGizmos != null && isDragging)
             {
+                
                 if (movementByGizmos.gizmoType == myTypeGizmos.Move)
                 {
                     Vector3 mousePosition = Input.mousePosition;
