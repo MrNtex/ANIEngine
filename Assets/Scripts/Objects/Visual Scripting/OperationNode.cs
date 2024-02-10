@@ -7,35 +7,33 @@ public class OperationNode : Node
 {
     public OperationType operationType;
     public TMP_Dropdown operationDropdown;
-    public float Input1 { get; set; }
-    public float Input2 { get; set; }
     public float Output { get; private set; }
 
-    public override void Execute()
+    public override object GetValue()
     {
+        object Input1 = Inputs[0].GetValue();
+        object Input2 = Inputs[1].GetValue();
         switch (operationType)
         {
             case OperationType.Add:
-                Output = Input1 + Input2;
+                Output = (float)Input1 + (float)Input2;
                 break;
             case OperationType.Subtract:
-                Output = Input1 - Input2;
+                Output = (float)Input1 - (float)Input2;
                 break;
             case OperationType.Multiply:
-                Output = Input1 * Input2;
+                Output = (float)Input1 * (float)Input2;
                 break;
             case OperationType.Divide:
-                Output = Input1 / Input2;
+                Output = (float)Input1 / (float)Input2;
                 break;
         }
 
-        foreach (Node output in Outputs)
-        {
-            output.Inputs.Remove(this);
-            output.Inputs.Add(this);
-
-            output.Execute();
-        }
+        return Output;
+    }
+    public override void Execute()
+    {
+        throw new System.NotImplementedException();
     }
     public void SetOperation()
     {

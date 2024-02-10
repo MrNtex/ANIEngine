@@ -2,16 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DebugNode : Node
+public class ValueNode : Node
 {
-    public string Message;
+    public float Value;
 
     public override void Execute()
     {
-        Debug.Log(Message + Inputs[0].GetValue());
+        return;
     }
     public override object GetValue()
     {
-        return null;
+        return Value;
     }
 }
