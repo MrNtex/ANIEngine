@@ -62,6 +62,55 @@ public class ObjectScripting : MonoBehaviour
                 BlockAction(bloc);
             }
         }
+        int GetValue(Block block, int id)
+        {
+            if(block.type == Types.Value)
+            {
+                return block.values[0];
+            }
+            if(block.type == Types.Operation)
+            {
+                int a = GetValue(block.inputs[0], block.inputsIds[0]);
+                int b = GetValue(block.inputs[1], block.inputsIds[1]);
+                switch (block.operation)
+                {
+                    case Operation.add:
+                        return a + b;
+                    case Operation.subtract:
+                        return a - b;
+                    case Operation.multiply:
+                        return a * b;
+                    case Operation.divide:
+                        return a / b;
+                    case Operation.modulo:
+                        return a % b;
+                }
+            }
+            if(block.type == Types.Transfrom)
+            {
+                if(id == 0)
+                {
+                    return (int)transform.position.x;
+                }
+                if (id == 1)
+                {
+                    return (int)transform.position.y;
+                }
+                if (id == 2)
+                {
+                    return (int)transform.rotation.z;
+                }
+                if (id == 3)
+                {
+                    return (int)transform.localScale.x;
+                }
+                if (id == 4)
+                {
+                    return (int)transform.localScale.y;
+                }
+            }
+            return block.values[block.inputsIds[0]];
+        }
         if (block.type == Types.Value)
         {
             Debug.LogError("Value cant be an output!");
@@ -72,8 +121,8 @@ public class ObjectScripting : MonoBehaviour
             {
                 Debug.LogError("Invalid Number of inputs!");
             }
-            int a = block.inputs[1].values[block.inputsIds[0]];
-            int b = block.inputs[2].values[block.inputsIds[1]];
+            int a = GetValue(block.inputs[1], block.inputsIds[0]);
+            int b = GetValue(block.inputs[2], block.inputsIds[1]);
             switch (block.operato)
             {
             case Operator.equal:
@@ -174,12 +223,21 @@ public enum Operator
     greaterOrEqual,
     lessOrEqual,
 }
+public enum Operation
+{
+    add,
+    subtract,
+    multiply,
+    divide,
+    modulo
+}
 [Serializable]
 public struct Block
 {
     public int id;
     public Types type;
     public Operator operato;
+    public Operation operation;
 
     public int[] values;
 
