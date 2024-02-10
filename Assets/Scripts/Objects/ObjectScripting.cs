@@ -117,7 +117,7 @@ public class ObjectScripting : MonoBehaviour
             return;
         } else if (block.type == Types.Logic)
         {
-            if(block.inputs.Count != 2 || block.inputs.Count != 2) 
+            if (block.inputs.Count != 2 || block.inputs.Count != 2)
             {
                 Debug.LogError("Invalid Number of inputs!");
             }
@@ -125,81 +125,89 @@ public class ObjectScripting : MonoBehaviour
             int b = GetValue(block.inputs[2], block.inputsIds[1]);
             switch (block.operato)
             {
-            case Operator.equal:
-                if(a == b)
-                {
-                    IfTrue();
-                }
-                else {          
-                    IfFalse();
-                }
-                break;
-            case Operator.greater:
-                if(a > b)
-                {
-                    IfTrue();
-                }
-                else
-                {
-                    IfFalse();
-                }
-                break;
-            case Operator.less:
-                if (a < b)
-                {
-                    IfTrue();
-                }
-                else
-                {
-                    IfFalse();
-                }
-                break;
-            case Operator.lessOrEqual:
-                if (a <= b)
-                {
-                    IfTrue();
-                }
-                else
+                case Operator.equal:
+                    if (a == b)
                     {
-                    IfFalse();
-                }
-                break;
-            case Operator.greaterOrEqual:
-                if (a >= b)
-                {
-                    IfTrue();
-                }
-                else
+                        IfTrue();
+                    }
+                    else {
+                        IfFalse();
+                    }
+                    break;
+                case Operator.greater:
+                    if (a > b)
                     {
-                    IfFalse();
-                }
-                break;
+                        IfTrue();
+                    }
+                    else
+                    {
+                        IfFalse();
+                    }
+                    break;
+                case Operator.less:
+                    if (a < b)
+                    {
+                        IfTrue();
+                    }
+                    else
+                    {
+                        IfFalse();
+                    }
+                    break;
+                case Operator.lessOrEqual:
+                    if (a <= b)
+                    {
+                        IfTrue();
+                    }
+                    else
+                    {
+                        IfFalse();
+                    }
+                    break;
+                case Operator.greaterOrEqual:
+                    if (a >= b)
+                    {
+                        IfTrue();
+                    }
+                    else
+                    {
+                        IfFalse();
+                    }
+                    break;
             }
-        } else if(block.type == Types.Transfrom)
+        } else if (block.type == Types.Key) {
+            if(Input.GetKeyDown((KeyCode)System.Enum.Parse(typeof(KeyCode), block.key)))
+            {
+                IfTrue();
+            }else
+            {
+                IfFalse();
+            }
+        } else if (block.type == Types.Transfrom)
         {
             // Position.x Position.y, Rotation, Scale.x, Scale.y
-            for(int i = 1; i < block.inputs.Count; i++)
+            for (int i = 1; i < block.inputs.Count; i++)
             {
-                Block block1 = block.inputs[i];
-                if (block1.id == 0)
+                int val = GetValue(block.inputs[i], block.inputs[i].inputsIds[i - 1]);
+                if (block.outputs[i] == 0)
                 {
-                    transform.position = new Vector3(block1.values[block1.inputsIds[i]], transform.position.y, transform.position.z);
+                    transform.position = new Vector3(val, transform.position.y, transform.position.z);
                 }
-                else if (block1.id == 1)
+                else if (block.outputs[i] == 1)
                 {
-                    transform.position = new Vector3(transform.position.x, block1.values[block1.inputsIds[i]], transform.position.z);
+                    transform.position = new Vector3(transform.position.x, val, transform.position.z);
                 }
-                else if (block1.id == 2)
+                else if (block.outputs[i] == 2)
                 {
-                    transform.rotation = Quaternion.Euler(0, 0, block1.values[block1.inputsIds[i]]);
+                    transform.rotation = Quaternion.Euler(0, 0, val);
                 }
-                else if (block1.id == 3)
+                else if (block.outputs[i] == 3)
                 {
-                    transform.localScale = new Vector3(block1.values[block1.inputsIds[i]], transform.localScale.y, transform.localScale.z);
+                    transform.localScale = new Vector3(val, transform.localScale.y, transform.localScale.z);
                 }
-                else if (block1.id == 4)
+                else if (block.outputs[i] == 4)
                 {
-                    transform.localScale = new Vector3(transform.localScale.x, block1.values[block1.inputsIds[i]], transform.localScale.z);
+                    transform.localScale = new Vector3(transform.localScale.x, val, transform.localScale.z);
                 }
             }
         }
@@ -208,9 +216,9 @@ public class ObjectScripting : MonoBehaviour
 public enum Types
 {
     Value,
-    Logic,
+    Logic, //Invoker
     Operation,
-    Key,
+    Key, //Invoker
     Transfrom,
     Rigidbody,
     Sprite
@@ -243,7 +251,10 @@ public struct Block
 
     public List<Block> inputs;
     public List<int> inputsIds;
+    public List<int> outputs;
 
     public List<Block> ifTrue;
     public List<Block> ifFalse;
+
+    public string key;
 }
