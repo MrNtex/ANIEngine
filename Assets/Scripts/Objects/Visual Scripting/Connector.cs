@@ -50,6 +50,13 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
                 movableModalWindow.enabled = true;
             }
             isDragging = false;
+            nodeOutput.lr.enabled = false; // Overriden by CreateConnection() if a connection is made
+            if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ScriptingInput"))
+            {
+                Node nodeInput = eventData.pointerCurrentRaycast.gameObject.transform.parent.gameObject.GetComponent<Node>();
+                nodeOutput.CreateConnection(nodeInput);
+                nodeOutput.lr.SetPosition(1, eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
+            }
             Debug.Log("Drag Ended");
         }
         
