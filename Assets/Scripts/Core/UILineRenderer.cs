@@ -15,7 +15,7 @@ public class UILineRenderer : MonoBehaviour
     {
         lineTransform = GetComponent<RectTransform>();
         lineImage = GetComponent<Image>();
-        DrawALine();
+        //DrawALine();
     }
 
     public void DrawALine(Vector2 a, Vector2 b)
