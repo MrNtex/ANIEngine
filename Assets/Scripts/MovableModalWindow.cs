@@ -22,7 +22,7 @@ public class MovableModalWindow : MonoBehaviour, IDragHandler, IBeginDragHandler
             RectTransformUtility.ScreenPointToLocalPointInRectangle(rectTransform, eventData.position, eventData.pressEventCamera, out offset);
         }
         else
-        {
+        { 
             offset = Vector2.zero;
         }
     }
