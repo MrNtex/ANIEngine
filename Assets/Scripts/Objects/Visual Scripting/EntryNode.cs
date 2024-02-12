@@ -1,9 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 
 public class EntryNode : Node
 {
+    public EntryType entryType;
+    [SerializeField]
+    private TMP_Dropdown entryDropdown;
     override public void Execute()
     {
         Debug.Log("EntryNode!");
@@ -13,4 +17,13 @@ public class EntryNode : Node
         return 0;
         // Do nothing
     }
+    public void SetEntry()
+    {
+        entryType = (EntryType)entryDropdown.value;
+    }
+}
+public enum EntryType
+{
+    Update,
+    Start
 }

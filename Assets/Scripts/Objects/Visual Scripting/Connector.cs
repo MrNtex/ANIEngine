@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.Windows;
 
 public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
@@ -11,6 +12,8 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     private MovableModalWindow[] movableModalWindows;
 
     private NodeOutput nodeOutput;
+
+    private InputType inputType;
     public void OnPointerDown(PointerEventData eventData)
     {
         if(!isDragging && eventData.pointerCurrentRaycast.gameObject.CompareTag("ScriptingOutput"))
@@ -19,10 +22,13 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             {
                 movableModalWindow.enabled = false;
             }
+            
             nodeOutput = eventData.pointerCurrentRaycast.gameObject.GetComponent<NodeOutput>();
+            nodeOutput.DestroyConnection();
+            inputType = nodeOutput.inputType;
             nodeOutput.lr.enabled = true;
+            nodeOutput.SetPositions(Vector2.zero, true);// Set the line to the output position
             isDragging = true;
-            Debug.Log("Drag Started");
         }
     }
     public void OnDrag(PointerEventData eventData)
@@ -35,14 +41,12 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             // Now use worldPosition to set your node positions or handle dragging
             nodeOutput.SetPositions(worldPosition); // Assuming SetPositions() expects a world position
 
-            Debug.Log("Dragging at world position: " + worldPosition);
         }
     }
 
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        Debug.Log("Pointer Up");
         if(isDragging)
         {
             foreach (MovableModalWindow movableModalWindow in movableModalWindows)
@@ -53,9 +57,14 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             nodeOutput.lr.enabled = false; // Overriden by CreateConnection() if a connection is made
             if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ScriptingInput"))
             {
-                Node nodeInput = eventData.pointerCurrentRaycast.gameObject.transform.parent.gameObject.GetComponent<Node>();
-                nodeOutput.CreateConnection(nodeInput);
-                nodeOutput.lr.SetPosition(1, eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
+                GameObject input = eventData.pointerCurrentRaycast.gameObject;
+                Node nodeInput = input.GetComponentInParent<Node>();
+                Debug.Log(input.GetComponent<InputOutputData>().inputType);
+                if(input.GetComponent<InputOutputData>().inputType == inputType)
+                {
+                    nodeOutput.CreateConnection(nodeInput);
+                    nodeOutput.lr.SetPosition(1, eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
+                }
             }
             Debug.Log("Drag Ended");
         }

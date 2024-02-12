@@ -8,7 +8,7 @@ public class DebugNode : Node
 
     public override void Execute()
     {
-        Debug.Log(Message + Inputs[0].GetValue());
+        Debug.Log(Message + Inputs[1].GetValue());
     }
     public override object GetValue()
     {
