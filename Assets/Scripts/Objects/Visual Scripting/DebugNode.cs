@@ -12,7 +12,20 @@ public class DebugNode : Node
 
     public override void Execute()
     {
-        Debug.Log(Message + " " + Inputs[1].GetValue());
+        if (Inputs[1] == null)
+        {
+            Debug.Log(Message);
+            return;
+        }
+        if (Inputs[1].GetValue() != null)
+        {
+            Debug.Log(Message + " " + Inputs[1].GetValue());
+        }
+        else
+        {
+            Debug.Log(Message);
+        }
+        
     }
     public override object GetValue()
     {

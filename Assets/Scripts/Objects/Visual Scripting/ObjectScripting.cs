@@ -5,8 +5,10 @@ using UnityEngine;
 
 public class ObjectScripting : MonoBehaviour
 {
-    public Node updateNode;
+    public Node updateNode, startNode;
     public EntryNode entryNode;
+
+    public GameObject script;
     private void Awake()
     {
         entryNode = updateNode as EntryNode;
@@ -22,25 +24,25 @@ public class ObjectScripting : MonoBehaviour
     }
     private void HandlePlayStateChanged(bool isPlaying)
     {
-        if (isPlaying && entryNode.entryType == EntryType.Start)
+        if (entryNode != null && isPlaying && entryNode.entryType == EntryType.Start)
         {
             Debug.Log("Game resumed");
-            PerformLogic();
+            PerformLogic(startNode);
         }
     }
     void Update()
     {
-        if (entryNode.entryType != EntryType.Update || Time.timeScale == 0)
+        if (entryNode != null && entryNode.entryType != EntryType.Update || Time.timeScale == 0)
         {
             return;
         }
-        PerformLogic();
+        PerformLogic(updateNode);
     }
 
-    private void PerformLogic()
+    private void PerformLogic(Node begining)
     {
         Queue<Node> nodesToProcess = new Queue<Node>();
-        nodesToProcess.Enqueue(updateNode);
+        nodesToProcess.Enqueue(begining);
 
         while (nodesToProcess.Count > 0)
         {
@@ -49,6 +51,7 @@ public class ObjectScripting : MonoBehaviour
 
             foreach (Node output in currentNode.Outputs)
             {
+                if(output != null)
                 nodesToProcess.Enqueue(output);
             }
         }

@@ -6,11 +6,11 @@ using UnityEngine;
 public class EntryNode : Node
 {
     public EntryType entryType;
-    [SerializeField]
-    private TMP_Dropdown entryDropdown;
+    //[SerializeField]
+    public TMP_Dropdown entryDropdown;
     override public void Execute()
     {
-        Debug.Log("EntryNode!");
+        //Debug.Log("EntryNode!");
     }
     override public object GetValue()
     {

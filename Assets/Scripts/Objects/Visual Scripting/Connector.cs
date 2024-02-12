@@ -8,8 +8,8 @@ using UnityEngine.Windows;
 public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
     public bool isDragging = false;
-    [SerializeField]
-    private MovableModalWindow[] movableModalWindows;
+    
+    public List<MovableModalWindow> movableModalWindows = new List<MovableModalWindow>();
 
     private NodeOutput nodeOutput;
 
