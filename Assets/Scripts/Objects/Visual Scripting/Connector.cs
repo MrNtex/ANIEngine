@@ -62,7 +62,7 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
                 Debug.Log(input.GetComponent<InputOutputData>().inputType);
                 if(input.GetComponent<InputOutputData>().inputType == inputType)
                 {
-                    nodeOutput.CreateConnection(nodeInput);
+                    nodeOutput.CreateConnection(nodeInput, input.transform);
                     nodeOutput.lr.SetPosition(1, eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
                 }
             }

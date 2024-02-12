@@ -9,10 +9,14 @@ public class MovableModalWindow : MonoBehaviour, IDragHandler, IBeginDragHandler
     private Canvas canvas;
     private Vector2 offset;
 
+    [SerializeField]
+    private Node node;
+
     void Awake()
     {
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
+        node = GetComponent<Node>();
     }
 
     public void OnBeginDrag(PointerEventData eventData)
@@ -34,6 +38,10 @@ public class MovableModalWindow : MonoBehaviour, IDragHandler, IBeginDragHandler
             if (RectTransformUtility.ScreenPointToLocalPointInRectangle(canvas.transform as RectTransform, eventData.position, eventData.pressEventCamera, out Vector2 localPoint))
             {
                 rectTransform.localPosition = localPoint - offset;
+                if(node != null)
+                {
+                    node.UpdateLineRenderers();
+                }
             }
         }
     }
