@@ -10,6 +10,10 @@ public class NodeOutput : MonoBehaviour
     public LineRenderer lr;
 
     private Transform end;
+
+    public int id;
+    public List<Node> connectionNodes = new List<Node>();
+    public List<int> connectionsIds = new List<int>();
     private void Start()
     {
         myNode = GetComponentInParent<Node>();
@@ -29,21 +33,28 @@ public class NodeOutput : MonoBehaviour
         lr.SetPosition(0, (Vector2)transform.position);
         lr.SetPosition(1, (Vector2)end.position);
     }
-    public void CreateConnection(Node target, Transform end)
+    public void CreateConnection(Node target, Transform end, int sourceId, int targetId)
     {
-        myNode.Outputs.Add(target);
-        target.Inputs.Add(myNode);
+        myNode.Outputs[sourceId] = target;
+        target.Inputs[targetId] = myNode;
         lr.enabled = true;
 
         this.end = end;
+
+        connectionNodes.Add(target);
+        connectionsIds.Add(targetId);
     }
-    public void DestroyConnection()
+    public void DestroyConnections()
     {
-        foreach(Node node in myNode.Outputs)
+        myNode.Outputs[id] = null;
+        foreach (Node cNode in connectionNodes) // It clears all connections from connected nodes
         {
-            node.Inputs.Remove(myNode);
+            foreach(int cId in connectionsIds)
+            {
+                cNode.Inputs[cId] = null;
+            }
         }
-        myNode.Outputs.Clear();
-        
+        connectionNodes.Clear();
+        connectionsIds.Clear();
     }
 }

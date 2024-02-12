@@ -14,6 +14,8 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     private NodeOutput nodeOutput;
 
     private InputType inputType;
+
+    private int sourceId;
     public void OnPointerDown(PointerEventData eventData)
     {
         if(!isDragging && eventData.pointerCurrentRaycast.gameObject.CompareTag("ScriptingOutput"))
@@ -24,11 +26,19 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             }
             
             nodeOutput = eventData.pointerCurrentRaycast.gameObject.GetComponent<NodeOutput>();
-            nodeOutput.DestroyConnection();
+            
             inputType = nodeOutput.inputType;
+            sourceId = nodeOutput.id;
+            
+            
             nodeOutput.lr.enabled = true;
             nodeOutput.SetPositions(Vector2.zero, true);// Set the line to the output position
             isDragging = true;
+            if (eventData.button == PointerEventData.InputButton.Right)
+            {
+                nodeOutput.DestroyConnections();
+                return;
+            }
         }
     }
     public void OnDrag(PointerEventData eventData)
@@ -59,10 +69,11 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             {
                 GameObject input = eventData.pointerCurrentRaycast.gameObject;
                 Node nodeInput = input.GetComponentInParent<Node>();
-                Debug.Log(input.GetComponent<InputOutputData>().inputType);
+                //Debug.Log(input.GetComponent<InputOutputData>().inputType);
                 if(input.GetComponent<InputOutputData>().inputType == inputType)
                 {
-                    nodeOutput.CreateConnection(nodeInput, input.transform);
+                    Debug.Log($"NodeInput: {nodeInput}, transfrom {input.transform}, sourceId: {sourceId}, targetId {input.GetComponent<InputOutputData>().id}");
+                    nodeOutput.CreateConnection(nodeInput, input.transform, sourceId, input.GetComponent<InputOutputData>().id);
                     nodeOutput.lr.SetPosition(1, eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
                 }
             }

@@ -4,5 +4,6 @@ using UnityEngine;
 
 public class InputOutputData : MonoBehaviour
 {
+    public int id;
     public InputType inputType;
 }

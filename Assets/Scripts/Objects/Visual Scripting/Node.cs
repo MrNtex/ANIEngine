@@ -4,8 +4,8 @@ using UnityEngine;
 
 public abstract class Node : MonoBehaviour
 {
-    public List<Node> Inputs = new List<Node>();
-    public List<Node> Outputs = new List<Node>();
+    public Node[] Inputs = new Node[5];
+    public Node[] Outputs = new Node[5];
 
     //public List<InputType> inputConnections = new List<InputType>();
     public List<NodeOutput> nodeOutputs = new List<NodeOutput>();
@@ -15,20 +15,28 @@ public abstract class Node : MonoBehaviour
 
     public void UpdateLineRenderers()
     {
-        if(Outputs.Count != 0)
+        for(int i = 0; i < Outputs.Length; i++)
         {
-            foreach (NodeOutput output in nodeOutputs)
+            if (Outputs[i] != null)
             {
-                output.UpdateLineRenderers();
+                nodeOutputs[i].UpdateLineRenderers();
             }
         }
-        
-        foreach(Node input in Inputs)
+
+        foreach (Node input in Inputs)
         {
-            foreach(NodeOutput output in input.nodeOutputs)
+            if(input != null)
             {
-                output.UpdateLineRenderers();
+                foreach (NodeOutput output in input.nodeOutputs)
+                {
+                    if (output != null)
+                    {
+                        output.UpdateLineRenderers();
+                    }
+                    
+                }
             }
+            
         }
     }
 }
