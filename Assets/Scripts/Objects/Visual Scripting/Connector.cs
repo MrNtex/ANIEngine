@@ -17,6 +17,7 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     private bool isNotConnection;
 
     private int sourceId;
+    private LineRenderer currentLineRender;
     public void OnPointerDown(PointerEventData eventData)
     {
         if(!isDragging && eventData.pointerCurrentRaycast.gameObject.CompareTag("ScriptingOutput"))
@@ -31,9 +32,9 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             inputType = nodeOutput.inputType;
             sourceId = nodeOutput.id;
             isNotConnection = nodeOutput.isNotConnection;
-            
-            nodeOutput.lr.enabled = true;
-            nodeOutput.SetPositions(Vector2.zero, true);// Set the line to the output position
+
+            currentLineRender = nodeOutput.CreateANewLine();
+            nodeOutput.SetPositions(Vector2.zero, currentLineRender);// Set the line to the output position
             isDragging = true;
             if (eventData.button == PointerEventData.InputButton.Right)
             {
@@ -50,7 +51,7 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPoint);
 
             // Now use worldPosition to set your node positions or handle dragging
-            nodeOutput.SetPositions(worldPosition); // Assuming SetPositions() expects a world position
+            nodeOutput.SetPositions(worldPosition, currentLineRender); // Assuming SetPositions() expects a world position
 
         }
     }
@@ -65,20 +66,23 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
                 movableModalWindow.enabled = true;
             }
             isDragging = false;
-            nodeOutput.lr.enabled = false; // Overriden by CreateConnection() if a connection is made
+
             if (eventData.pointerCurrentRaycast.gameObject.CompareTag("ScriptingInput"))
             {
                 GameObject input = eventData.pointerCurrentRaycast.gameObject;
-                Node nodeInput = input.GetComponentInParent<Node>();
+                NodeInput nodeInput = input.GetComponent<NodeInput>();
                 //Debug.Log(input.GetComponent<InputOutputData>().inputType);
-                if(input.GetComponent<NodeInput>().inputType == inputType)
+                if(nodeInput.inputType == inputType)
                 {
-                    Debug.Log($"NodeInput: {nodeInput}, transfrom {input.transform}, sourceId: {sourceId}, targetId {input.GetComponent<NodeInput>().inputID}, NOT: {isNotConnection}");
-                    nodeOutput.CreateConnection(nodeInput, input.transform, sourceId, input.GetComponent<NodeInput>().inputID, isNotConnection);
-                    nodeOutput.lr.SetPosition(1, (Vector2)eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
+                    Debug.Log($"NodeInput: {nodeInput.myNode}, transfrom {input.transform}, sourceId: {sourceId}, targetId {nodeInput.inputID}, NOT: {isNotConnection}");
+                    nodeOutput.CreateConnection(nodeInput, input.transform, sourceId, input.GetComponent<NodeInput>().inputID, isNotConnection, currentLineRender);
+                    nodeOutput.SetPositions((Vector2)eventData.pointerCurrentRaycast.gameObject.transform.position, currentLineRender); // Set the line to the input position
                 }
             }
-            Debug.Log("Drag Ended");
+            else
+            {
+                nodeOutput.DestroyLineRender(currentLineRender);
+            }
         }
         
     }

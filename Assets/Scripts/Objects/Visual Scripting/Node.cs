@@ -5,8 +5,8 @@ using UnityEngine;
 public abstract class Node : MonoBehaviour
 {
     public Node[] Inputs = new Node[5];
-    public Node[] Outputs = new Node[5];
-    public Node[] FalseOutputs = new Node[5];
+    public List<Node> Outputs = new List<Node>();
+    public List<Node> FalseOutputs = new List<Node>();
     //public List<InputType> inputConnections = new List<InputType>();
     public List<NodeOutput> nodeOutputs = new List<NodeOutput>();
 

@@ -9,6 +9,7 @@ public class NodeOutput : MonoBehaviour
     public bool isNotConnection;
 
     public LineRenderer lr;
+    private Dictionary<LineRenderer, NodeInput> connectionLines = new Dictionary<LineRenderer, NodeInput>();
 
     private Transform end;
 
@@ -19,38 +20,60 @@ public class NodeOutput : MonoBehaviour
     {
         myNode = GetComponentInParent<Node>();
     }
-    public void SetPositions(Vector2 pos, bool reset = false)
+    public LineRenderer CreateANewLine()
     {
+        GameObject line = new GameObject("Line");
+        line.transform.SetParent(transform);
+        LineRenderer newlr = line.AddComponent<LineRenderer>();
+        newlr.positionCount = 2;
+        newlr.startWidth = lr.startWidth;
+        newlr.endWidth = lr.endWidth;
+        newlr.material = lr.material;
+        newlr.startColor = lr.startColor;
+        newlr.endColor = lr.endColor;
+        newlr.enabled = true;
+        newlr.sortingOrder = 3;
         lr.SetPosition(0, (Vector2)transform.position);
+        lr.SetPosition(1, (Vector2)transform.position);
+
+        
+        return newlr;
+    }
+    public void SetPositions(Vector2 pos, LineRenderer myLR, bool reset = false)
+    {
+        myLR.SetPosition(0, (Vector2)transform.position);
         if(reset)
         {
-            lr.SetPosition(1, (Vector2)transform.position);
+            myLR.SetPosition(1, (Vector2)transform.position);
             return;
         }
-        lr.SetPosition(1, pos);
+        myLR.SetPosition(1, pos);
     }
     public void UpdateLineRenderers()
     {
-        lr.SetPosition(0, (Vector2)transform.position);
-        lr.SetPosition(1, (Vector2)end.position);
+        foreach(LineRenderer lr in connectionLines.Keys)
+        {
+            lr.SetPosition(0, (Vector2)transform.position);
+            lr.SetPosition(1, (Vector2)connectionLines[lr].transform.position);
+        }
     }
-    public void CreateConnection(Node target, Transform end, int sourceId, int targetId, bool notConnection)
+    public void CreateConnection(NodeInput target, Transform end, int sourceId, int targetId, bool notConnection, LineRenderer myLR)
     {
         
         if (notConnection)
         {
-            myNode.FalseOutputs[sourceId] = target;
+            myNode.FalseOutputs.Add(target.myNode);
         }
         else
         {
-            myNode.Outputs[sourceId] = target;
+            myNode.Outputs.Add(target.myNode);
         }
-        target.Inputs[targetId] = myNode;
-        lr.enabled = true;
+        target.myNode.Inputs[targetId] = myNode;
+        connectionLines.Add(myLR, target);
 
         this.end = end;
 
-        connectionNodes.Add(target);
+        connectionNodes.Add(target.myNode);
         connectionsIds.Add(targetId);
     }
     public void DestroyConnections()
@@ -65,5 +88,10 @@ public class NodeOutput : MonoBehaviour
         }
         connectionNodes.Clear();
         connectionsIds.Clear();
+    }
+    public void DestroyLineRender(LineRenderer connection)
+    {
+        connectionLines.Remove(connection);
+        Destroy(connection.gameObject);
     }
 }
