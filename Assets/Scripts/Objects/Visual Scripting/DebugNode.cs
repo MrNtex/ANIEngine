@@ -10,12 +10,12 @@ public class DebugNode : Node
     [SerializeField]
     private TMP_InputField messageInputField;
 
-    public override void Execute()
+    public override bool? Execute()
     {
         if (Inputs[1] == null)
         {
             Debug.Log(Message);
-            return;
+            return null;
         }
         if (Inputs[1].GetValue() != null)
         {
@@ -25,7 +25,7 @@ public class DebugNode : Node
         {
             Debug.Log(Message);
         }
-        
+        return null;
     }
     public override object GetValue()
     {

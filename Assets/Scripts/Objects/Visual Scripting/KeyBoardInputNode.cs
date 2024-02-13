@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
-public class ValueNode : Node
+public class KeyBoardInputNode : Node
 {
     public float Value;
     [SerializeField]

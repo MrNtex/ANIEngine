@@ -10,8 +10,9 @@ public class EntryNode : Node
     public TMP_Dropdown entryDropdown;
 
     public NodesCreator nodesCreator;
-    override public void Execute()
+    override public bool? Execute()
     {
+        return null;
         //Debug.Log("EntryNode!");
     }
     override public object GetValue()

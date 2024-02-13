@@ -31,9 +31,9 @@ public class OperationNode : Node
 
         return Output;
     }
-    public override void Execute()
+    public override bool? Execute()
     {
-        throw new System.NotImplementedException();
+        return null;
     }
     public void SetOperation()
     {

@@ -6,11 +6,11 @@ public abstract class Node : MonoBehaviour
 {
     public Node[] Inputs = new Node[5];
     public Node[] Outputs = new Node[5];
-
+    public Node[] FalseOutputs = new Node[5];
     //public List<InputType> inputConnections = new List<InputType>();
     public List<NodeOutput> nodeOutputs = new List<NodeOutput>();
 
-    public abstract void Execute();
+    public abstract bool? Execute(); // Null = node wasn't conditional, true = success, false = failure
     public abstract object GetValue();
 
     public void UpdateLineRenderers()

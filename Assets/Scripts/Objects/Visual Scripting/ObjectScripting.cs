@@ -47,12 +47,22 @@ public class ObjectScripting : MonoBehaviour
         while (nodesToProcess.Count > 0)
         {
             Node currentNode = nodesToProcess.Dequeue();
-            currentNode.Execute();
-
-            foreach (Node output in currentNode.Outputs)
+            bool? condition = currentNode.Execute();
+            if(condition == null || condition == true)
             {
-                if(output != null)
-                nodesToProcess.Enqueue(output);
+                foreach (Node output in currentNode.Outputs)
+                {
+                    if (output != null)
+                        nodesToProcess.Enqueue(output);
+                }
+            }
+            else
+            {
+                foreach (Node output in currentNode.FalseOutputs)
+                {
+                    if (output != null)
+                        nodesToProcess.Enqueue(output);
+                }
             }
         }
     }
