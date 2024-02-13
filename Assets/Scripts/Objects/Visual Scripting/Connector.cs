@@ -14,6 +14,7 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     private NodeOutput nodeOutput;
 
     private InputType inputType;
+    private bool isNotConnection;
 
     private int sourceId;
     public void OnPointerDown(PointerEventData eventData)
@@ -29,7 +30,7 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             
             inputType = nodeOutput.inputType;
             sourceId = nodeOutput.id;
-            
+            isNotConnection = nodeOutput.isNotConnection;
             
             nodeOutput.lr.enabled = true;
             nodeOutput.SetPositions(Vector2.zero, true);// Set the line to the output position
@@ -70,10 +71,10 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
                 GameObject input = eventData.pointerCurrentRaycast.gameObject;
                 Node nodeInput = input.GetComponentInParent<Node>();
                 //Debug.Log(input.GetComponent<InputOutputData>().inputType);
-                if(input.GetComponent<InputOutputData>().inputType == inputType)
+                if(input.GetComponent<NodeInput>().inputType == inputType)
                 {
-                    Debug.Log($"NodeInput: {nodeInput}, transfrom {input.transform}, sourceId: {sourceId}, targetId {input.GetComponent<InputOutputData>().id}");
-                    nodeOutput.CreateConnection(nodeInput, input.transform, sourceId, input.GetComponent<InputOutputData>().id);
+                    Debug.Log($"NodeInput: {nodeInput}, transfrom {input.transform}, sourceId: {sourceId}, targetId {input.GetComponent<NodeInput>().inputID}");
+                    nodeOutput.CreateConnection(nodeInput, input.transform, sourceId, input.GetComponent<NodeInput>().inputID, isNotConnection);
                     nodeOutput.lr.SetPosition(1, eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
                 }
             }

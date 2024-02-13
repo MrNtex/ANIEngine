@@ -6,6 +6,7 @@ public class NodeOutput : MonoBehaviour
 {
     public InputType inputType;
     public Node myNode;
+    public bool isNotConnection;
 
     public LineRenderer lr;
 
@@ -33,9 +34,17 @@ public class NodeOutput : MonoBehaviour
         lr.SetPosition(0, (Vector2)transform.position);
         lr.SetPosition(1, (Vector2)end.position);
     }
-    public void CreateConnection(Node target, Transform end, int sourceId, int targetId)
+    public void CreateConnection(Node target, Transform end, int sourceId, int targetId, bool notConnection)
     {
-        myNode.Outputs[sourceId] = target;
+        
+        if (notConnection)
+        {
+            myNode.FalseOutputs[sourceId] = target;
+        }
+        else
+        {
+            myNode.Outputs[sourceId] = target;
+        }
         target.Inputs[targetId] = myNode;
         lr.enabled = true;
 

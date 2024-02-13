@@ -5,21 +5,43 @@ using UnityEngine;
 
 public class KeyBoardInputNode : Node
 {
-    public float Value;
     [SerializeField]
-    private TMP_InputField valueInputField;
+    private TMP_InputField keyCodeInputField;
+    [SerializeField]
+    private TMP_Dropdown inputTypeDropdown;
 
+    private KeyBoardInputType keyBoardInputType;
+    private KeyCode keyCode;
     public override bool? Execute()
     {
-        return null;
+        switch (keyBoardInputType)
+        {
+            case KeyBoardInputType.KeyDown:
+                return Input.GetKeyDown(keyCode);
+            case KeyBoardInputType.KeyPress:
+                return Input.GetKey(keyCode);
+            case KeyBoardInputType.KeyUp:
+                return Input.GetKeyUp(keyCode);
+        }
+        return false;
     }
     public override object GetValue()
     {
-        return Value;
+        return null;
     }
 
-    public void SetValue()
+    public void SetKeyCode()
     {
-        Value = float.Parse(valueInputField.text);
+        keyCode = (KeyCode)System.Enum.Parse(typeof(KeyCode), keyCodeInputField.text);
     }
+    public void SetInputType()
+    {
+        keyBoardInputType = (KeyBoardInputType)inputTypeDropdown.value;
+    }
+}
+public enum KeyBoardInputType
+{
+    KeyDown,
+    KeyPress,
+    KeyUp
 }
