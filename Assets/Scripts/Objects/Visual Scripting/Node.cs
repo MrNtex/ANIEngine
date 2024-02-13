@@ -15,12 +15,24 @@ public abstract class Node : MonoBehaviour
 
     public void UpdateLineRenderers()
     {
-        for(int i = 0; i < Outputs.Length; i++)
+        /*for(int i = 0; i < Outputs.Length; i++)
         {
             if (Outputs[i] != null)
             {
                 nodeOutputs[i].UpdateLineRenderers();
             }
+        }
+        for (int i = 0; i < FalseOutputs.Length; i++)
+        {
+            if (FalseOutputs[i] != null)
+            {
+                nodeOutputs[i].UpdateLineRenderers();
+            }
+        }*/
+        for(int i = 0; i < nodeOutputs.Count; i++)
+        {
+            if (nodeOutputs[i] != null && nodeOutputs[i].connectionNodes.Count > 0)
+                nodeOutputs[i].UpdateLineRenderers();
         }
 
         foreach (Node input in Inputs)

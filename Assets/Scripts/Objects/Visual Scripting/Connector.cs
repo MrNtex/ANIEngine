@@ -73,9 +73,9 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
                 //Debug.Log(input.GetComponent<InputOutputData>().inputType);
                 if(input.GetComponent<NodeInput>().inputType == inputType)
                 {
-                    Debug.Log($"NodeInput: {nodeInput}, transfrom {input.transform}, sourceId: {sourceId}, targetId {input.GetComponent<NodeInput>().inputID}");
+                    Debug.Log($"NodeInput: {nodeInput}, transfrom {input.transform}, sourceId: {sourceId}, targetId {input.GetComponent<NodeInput>().inputID}, NOT: {isNotConnection}");
                     nodeOutput.CreateConnection(nodeInput, input.transform, sourceId, input.GetComponent<NodeInput>().inputID, isNotConnection);
-                    nodeOutput.lr.SetPosition(1, eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
+                    nodeOutput.lr.SetPosition(1, (Vector2)eventData.pointerCurrentRaycast.gameObject.transform.position); // Set the line to the input position
                 }
             }
             Debug.Log("Drag Ended");
