@@ -24,7 +24,7 @@ public class ObjectScripting : MonoBehaviour
     }
     private void HandlePlayStateChanged(bool isPlaying)
     {
-        if (entryNode != null && isPlaying && entryNode.entryType == EntryType.Start)
+        if (startNode != null && isPlaying)
         {
             Debug.Log("Game resumed");
             PerformLogic(startNode);
@@ -32,11 +32,11 @@ public class ObjectScripting : MonoBehaviour
     }
     void Update()
     {
-        if (entryNode != null && entryNode.entryType != EntryType.Update || Time.timeScale == 0)
+        if (updateNode != null && Time.timeScale != 0)
         {
-            return;
+            PerformLogic(updateNode);
         }
-        PerformLogic(updateNode);
+        
     }
 
     private void PerformLogic(Node begining)

@@ -25,6 +25,29 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
     {
         
     }
+    public void ChangeEntryNodes(EntryNode entryNode)
+    {
+        if(entryNode.entryType == EntryType.Start)
+        {
+            if(objectScripting.updateNode != null)
+            {
+                updateNode = null;
+                objectScripting.updateNode = null;
+            }
+            startNode = entryNode;
+            objectScripting.startNode = entryNode;
+        }
+        else
+        {
+            if (objectScripting.startNode != null)
+            {
+                startNode = null;
+                objectScripting.startNode = null;
+            }
+            updateNode = entryNode;
+            objectScripting.updateNode = entryNode;
+        }
+    }
     public void AddNode(int idx)
     {
         objectScripting = childrensScripts[currentObject].GetComponent<ObjectScripting>();
@@ -36,6 +59,12 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
             {
                 updateNode = newNode.GetComponent<Node>();
                 objectScripting.updateNode = updateNode;
+                newNode.GetComponent<EntryNode>().nodesCreator = this;
+                if(objectScripting.updateNode != null && objectScripting.startNode != null)
+                {
+                    newNode.GetComponent<EntryNode>().entryDropdown.interactable = false;
+                    objectScripting.startNode.gameObject.GetComponent<EntryNode>().entryDropdown.interactable = false;
+                }
             }else if(startNode == null)
             {
                 startNode = newNode.GetComponent<Node>();
@@ -44,6 +73,11 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
                 entryNode.entryType = EntryType.Start;
                 entryNode.entryDropdown.value = 1;
                 entryNode.entryDropdown.interactable = false;
+                entryNode.nodesCreator = this;
+                if (objectScripting.updateNode != null && objectScripting.startNode != null)
+                {
+                    objectScripting.updateNode.gameObject.GetComponent<EntryNode>().entryDropdown.interactable = false;
+                }
             }
             else
             {
