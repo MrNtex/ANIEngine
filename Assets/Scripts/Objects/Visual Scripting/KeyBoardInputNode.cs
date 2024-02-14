@@ -27,7 +27,7 @@ public class KeyBoardInputNode : Node
         }
         return latestValue = false;
     }
-    public override object GetValue()
+    public override object GetValue(int id)
     {
         return latestValue;
     }

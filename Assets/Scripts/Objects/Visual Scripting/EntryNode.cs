@@ -15,7 +15,7 @@ public class EntryNode : Node
         return null;
         //Debug.Log("EntryNode!");
     }
-    override public object GetValue()
+    override public object GetValue(int id)
     {
         return 0;
         // Do nothing

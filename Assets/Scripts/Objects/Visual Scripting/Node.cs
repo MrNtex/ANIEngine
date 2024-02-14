@@ -4,14 +4,14 @@ using UnityEngine;
 
 public abstract class Node : MonoBehaviour
 {
-    public Node[] Inputs = new Node[5];
+    public NodeOutput[] Inputs = new NodeOutput[5];
     public List<Node> Outputs = new List<Node>();
     public List<Node> FalseOutputs = new List<Node>();
     //public List<InputType> inputConnections = new List<InputType>();
     public List<NodeOutput> nodeOutputs = new List<NodeOutput>();
 
     public abstract bool? Execute(); // Null = node wasn't conditional, true = success, false = failure
-    public abstract object GetValue();
+    public abstract object GetValue(int id);
 
     public void UpdateLineRenderers()
     {
@@ -35,20 +35,13 @@ public abstract class Node : MonoBehaviour
                 nodeOutputs[i].UpdateLineRenderers();
         }
 
-        foreach (Node input in Inputs)
+        foreach (NodeOutput input in Inputs)
         {
-            if(input != null)
+            if (input != null)
             {
-                foreach (NodeOutput output in input.nodeOutputs)
-                {
-                    if (output != null)
-                    {
-                        output.UpdateLineRenderers();
-                    }
-                    
-                }
+                input.UpdateLineRenderers();
             }
-            
+
         }
     }
 }

@@ -68,7 +68,7 @@ public class NodeOutput : MonoBehaviour
         {
             myNode.Outputs.Add(target.myNode);
         }
-        target.myNode.Inputs[targetId] = myNode;
+        target.myNode.Inputs[targetId] = this;
         connectionLines.Add(myLR, target);
 
         this.end = end;

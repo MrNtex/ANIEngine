@@ -9,10 +9,10 @@ public class OperationNode : Node
     public TMP_Dropdown operationDropdown;
     public float Output { get; private set; }
 
-    public override object GetValue()
+    public override object GetValue(int id)
     {
-        object Input1 = Inputs[0].GetValue();
-        object Input2 = Inputs[1].GetValue();
+        object Input1 = Inputs[0].myNode.GetValue(Inputs[0].id);
+        object Input2 = Inputs[1].myNode.GetValue(Inputs[1].id);
         switch (operationType)
         {
             case OperationType.Add:

@@ -13,7 +13,7 @@ public class ValueNode : Node
     {
         return null;
     }
-    public override object GetValue()
+    public override object GetValue(int id)
     {
         return Value;
     }

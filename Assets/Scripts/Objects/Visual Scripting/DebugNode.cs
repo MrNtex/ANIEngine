@@ -17,9 +17,9 @@ public class DebugNode : Node
             Debug.Log(Message);
             return null;
         }
-        if (Inputs[1].GetValue() != null)
+        if (Inputs[1].myNode.GetValue(Inputs[1].id) != null)
         {
-            Debug.Log(Message + " " + Inputs[1].GetValue());
+            Debug.Log(Message + " " + Inputs[1].myNode.GetValue(Inputs[1].id));
         }
         else
         {
@@ -27,7 +27,7 @@ public class DebugNode : Node
         }
         return null;
     }
-    public override object GetValue()
+    public override object GetValue(int id)
     {
         return null;
     }
