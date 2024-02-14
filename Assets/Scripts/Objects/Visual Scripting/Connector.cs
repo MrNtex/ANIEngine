@@ -78,6 +78,10 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
                     nodeOutput.CreateConnection(nodeInput, input.transform, sourceId, input.GetComponent<NodeInput>().inputID, isNotConnection, currentLineRender);
                     nodeOutput.SetPositions((Vector2)eventData.pointerCurrentRaycast.gameObject.transform.position, currentLineRender); // Set the line to the input position
                 }
+                else
+                {
+                    nodeOutput.DestroyLineRender(currentLineRender);
+                }
             }
             else
             {

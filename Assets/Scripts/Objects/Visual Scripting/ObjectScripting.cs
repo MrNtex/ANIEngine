@@ -9,6 +9,7 @@ public class ObjectScripting : MonoBehaviour
     public EntryNode entryNode;
 
     public GameObject script;
+    public int scriptID;
     private void Awake()
     {
         entryNode = updateNode as EntryNode;

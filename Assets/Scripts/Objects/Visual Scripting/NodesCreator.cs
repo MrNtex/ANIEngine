@@ -11,7 +11,7 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
     [SerializeField] 
     private GameObject[] nodePrefabs;
 
-    public GameObject[] childrensScripts;
+    public List<GameObject> childrensScripts = new List<GameObject>();
     public int currentObject;
 
     private Connector connector;
@@ -55,7 +55,7 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
     {
         
         objectScripting = childrensScripts[currentObject].GetComponent<ObjectScripting>();
-        if (objectScripting.GetComponent<Rigidbody2D>() == null && idx == 7)
+        if (objectScripting.GetComponent<Rigidbody2D>() == null && idx == 8)
         {
             //Button should be disabled do nothing
             return;
@@ -94,11 +94,11 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
                 Destroy(newNode);
                 return;
             }
-        }else if(idx == 6)
+        }else if(idx == 7)
         {
             //TRANSFORM NODE
             newNode.GetComponent<TransformNode>().myTransform = objectScripting.transform;
-        }else if(idx == 7)
+        }else if(idx == 8)
         {
             //RIGIDBODY NODE
             newNode.GetComponent<RigidbodyNode>().myRigidBody = objectScripting.GetComponent<Rigidbody2D>();
