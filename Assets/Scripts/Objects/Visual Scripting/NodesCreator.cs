@@ -89,6 +89,10 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
         {
             //TRANSFORM NODE
             newNode.GetComponent<TransformNode>().myTransform = objectScripting.transform;
+        }else if(idx == 7)
+        {
+            //RIGIDBODY NODE
+            newNode.GetComponent<RigidbodyNode>().myRigidBody = objectScripting.GetComponent<Rigidbody2D>();
         }
         connector.movableModalWindows.Add(newNode.GetComponent<MovableModalWindow>());
         spawnModal.SetActive(false);

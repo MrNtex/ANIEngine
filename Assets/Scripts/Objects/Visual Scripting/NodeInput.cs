@@ -7,4 +7,8 @@ public class NodeInput: MonoBehaviour
     public int inputID;
     public InputType inputType;
     public Node myNode;
+    private void Awake()
+    {
+        myNode = GetComponentInParent<Node>();
+    }
 }
