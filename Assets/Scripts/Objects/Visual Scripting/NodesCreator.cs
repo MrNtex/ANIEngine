@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
+using UnityEngine.UI;
 
 public class NodesCreator : MonoBehaviour, IPointerDownHandler
 {
@@ -18,6 +19,8 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
 
     [SerializeField]
     private GameObject spawnModal;
+    [SerializeField]
+    private Button rbButton;
 
     private Node updateNode, startNode;
     // Start is called before the first frame update
@@ -50,7 +53,13 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
     }
     public void AddNode(int idx)
     {
+        
         objectScripting = childrensScripts[currentObject].GetComponent<ObjectScripting>();
+        if (objectScripting.GetComponent<Rigidbody2D>() == null && idx == 7)
+        {
+            //Button should be disabled do nothing
+            return;
+        }
         connector = objectScripting.script.GetComponent<Connector>();
         GameObject newNode = Instantiate(nodePrefabs[idx], objectScripting.script.transform);
         if(idx == 0)
@@ -102,6 +111,15 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
         if (eventData.button == PointerEventData.InputButton.Right)
         {
             spawnModal.SetActive(true);
+            objectScripting = childrensScripts[currentObject].GetComponent<ObjectScripting>();
+            if (objectScripting.GetComponent<Rigidbody2D>() == null)
+            {
+                rbButton.interactable = false;
+            }
+            else
+            {
+                rbButton.interactable = true;
+            }
             Vector3 screenPoint = eventData.position; // Get current screen position of the mouse
             Vector3 worldPosition = Camera.main.ScreenToWorldPoint(screenPoint);
             spawnModal.transform.position = new Vector2(worldPosition.x, worldPosition.y);
