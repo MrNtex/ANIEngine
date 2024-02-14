@@ -22,7 +22,7 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
     [SerializeField]
     private Button rbButton;
 
-    private Node updateNode, startNode;
+    //private Node updateNode, startNode;
     // Start is called before the first frame update
     void Start()
     {
@@ -34,20 +34,19 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
         {
             if(objectScripting.updateNode != null)
             {
-                updateNode = null;
                 objectScripting.updateNode = null;
             }
-            startNode = entryNode;
+            objectScripting.startNode = entryNode;
             objectScripting.startNode = entryNode;
         }
         else
         {
             if (objectScripting.startNode != null)
             {
-                startNode = null;
+                objectScripting.startNode = null;
                 objectScripting.startNode = null;
             }
-            updateNode = entryNode;
+            objectScripting.updateNode = entryNode;
             objectScripting.updateNode = entryNode;
         }
     }
@@ -64,20 +63,20 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
         GameObject newNode = Instantiate(nodePrefabs[idx], objectScripting.script.transform);
         if(idx == 0)
         {
-            if(updateNode == null)
+            if(objectScripting.updateNode == null)
             {
-                updateNode = newNode.GetComponent<Node>();
-                objectScripting.updateNode = updateNode;
+                objectScripting.updateNode = newNode.GetComponent<Node>();
+                //objectScripting.updateNode = updateNode;
                 newNode.GetComponent<EntryNode>().nodesCreator = this;
                 if(objectScripting.updateNode != null && objectScripting.startNode != null)
                 {
                     newNode.GetComponent<EntryNode>().entryDropdown.interactable = false;
                     objectScripting.startNode.gameObject.GetComponent<EntryNode>().entryDropdown.interactable = false;
                 }
-            }else if(startNode == null)
+            }else if(objectScripting.startNode == null)
             {
-                startNode = newNode.GetComponent<Node>();
-                objectScripting.startNode = startNode;
+                objectScripting.startNode = newNode.GetComponent<Node>();
+                //objectScripting.startNode = startNode;
                 EntryNode entryNode = newNode.GetComponent<EntryNode>();
                 entryNode.entryType = EntryType.Start;
                 entryNode.entryDropdown.value = 1;
