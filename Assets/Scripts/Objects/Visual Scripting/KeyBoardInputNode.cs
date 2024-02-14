@@ -12,22 +12,24 @@ public class KeyBoardInputNode : Node
 
     private KeyBoardInputType keyBoardInputType;
     private KeyCode keyCode;
+
+    private bool latestValue;
     public override bool? Execute()
     {
         switch (keyBoardInputType)
         {
             case KeyBoardInputType.KeyDown:
-                return Input.GetKeyDown(keyCode);
+                return latestValue = Input.GetKeyDown(keyCode);
             case KeyBoardInputType.KeyPress:
-                return Input.GetKey(keyCode);
+                return latestValue = Input.GetKey(keyCode);
             case KeyBoardInputType.KeyUp:
-                return Input.GetKeyUp(keyCode);
+                return latestValue = Input.GetKeyUp(keyCode);
         }
-        return false;
+        return latestValue = false;
     }
     public override object GetValue()
     {
-        return null;
+        return latestValue;
     }
 
     public void SetKeyCode()
