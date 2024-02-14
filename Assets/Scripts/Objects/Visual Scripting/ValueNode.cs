@@ -11,6 +11,10 @@ public class ValueNode : Node
 
     public override bool? Execute()
     {
+        if (Inputs[1] != null)
+        {
+            Value = (float)Inputs[1].myNode.GetValue(Inputs[1].id);
+        }
         return null;
     }
     public override object GetValue(int id)

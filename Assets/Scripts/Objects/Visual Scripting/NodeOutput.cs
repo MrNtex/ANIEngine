@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.MemoryProfiler;
 using UnityEngine;
 
 public class NodeOutput : MonoBehaviour
@@ -86,6 +87,11 @@ public class NodeOutput : MonoBehaviour
                 cNode.Inputs[cId] = null;
             }
         }
+        foreach (LineRenderer lr in connectionLines.Keys)
+        {
+            Destroy(lr.gameObject);
+        }
+        connectionLines.Clear();
         connectionNodes.Clear();
         connectionsIds.Clear();
     }

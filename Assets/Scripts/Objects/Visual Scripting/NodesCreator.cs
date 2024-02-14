@@ -85,6 +85,10 @@ public class NodesCreator : MonoBehaviour, IPointerDownHandler
                 Destroy(newNode);
                 return;
             }
+        }else if(idx == 6)
+        {
+            //TRANSFORM NODE
+            newNode.GetComponent<TransformNode>().myTransform = objectScripting.transform;
         }
         connector.movableModalWindows.Add(newNode.GetComponent<MovableModalWindow>());
         spawnModal.SetActive(false);

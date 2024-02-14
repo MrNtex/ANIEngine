@@ -34,7 +34,7 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             isNotConnection = nodeOutput.isNotConnection;
 
             currentLineRender = nodeOutput.CreateANewLine();
-            nodeOutput.SetPositions(Vector2.zero, currentLineRender);// Set the line to the output position
+            //nodeOutput.SetPositions(Vector2.zero, currentLineRender);// Set the line to the output position
             isDragging = true;
             if (eventData.button == PointerEventData.InputButton.Right)
             {
