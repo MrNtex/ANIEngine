@@ -86,6 +86,7 @@ public class NodeOutput : MonoBehaviour
             {
                 cNode.Inputs[cId] = null;
             }
+            myNode.Outputs.Remove(cNode);
         }
         foreach (LineRenderer lr in connectionLines.Keys)
         {

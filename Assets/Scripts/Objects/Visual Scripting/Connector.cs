@@ -32,15 +32,15 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             inputType = nodeOutput.inputType;
             sourceId = nodeOutput.id;
             isNotConnection = nodeOutput.isNotConnection;
-
-            currentLineRender = nodeOutput.CreateANewLine();
-            //nodeOutput.SetPositions(Vector2.zero, currentLineRender);// Set the line to the output position
-            isDragging = true;
             if (eventData.button == PointerEventData.InputButton.Right)
             {
                 nodeOutput.DestroyConnections();
                 return;
             }
+            currentLineRender = nodeOutput.CreateANewLine();
+            //nodeOutput.SetPositions(Vector2.zero, currentLineRender);// Set the line to the output position
+            isDragging = true;
+            
         }
     }
     public void OnDrag(PointerEventData eventData)
