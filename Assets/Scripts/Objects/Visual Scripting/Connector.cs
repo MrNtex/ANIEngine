@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.Windows;
+
 
 public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPointerUpHandler
 {
@@ -18,6 +18,9 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 
     private int sourceId;
     private LineRenderer currentLineRender;
+
+    private bool isDraggingCamera = false;
+    private Vector3 lastMousePosition;
     public void OnPointerDown(PointerEventData eventData)
     {
         if(!isDragging && eventData.pointerCurrentRaycast.gameObject.CompareTag("ScriptingOutput"))
@@ -45,6 +48,7 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
     }
     public void OnDrag(PointerEventData eventData)
     {
+        
         if (isDragging)
         {
             Vector3 screenPoint = eventData.position; // Get current screen position of the mouse
@@ -59,6 +63,11 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 
     public void OnPointerUp(PointerEventData eventData)
     {
+        if(isDraggingCamera)
+        {
+            isDraggingCamera = false;
+            return;
+        }
         if(isDragging)
         {
             foreach (MovableModalWindow movableModalWindow in movableModalWindows)
@@ -87,6 +96,32 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
             {
                 nodeOutput.DestroyLineRender(currentLineRender);
             }
+        }
+        
+    }
+    void Update()
+    {
+        if (Input.GetMouseButtonDown(2))
+        {
+            lastMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        }
+        if (Input.GetMouseButton(2))
+        {
+
+            Vector3 currentMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector3 diff = lastMousePosition - currentMousePosition;
+            diff *= .7f;
+            Debug.Log(diff);
+            foreach (MovableModalWindow movableModalWindow in movableModalWindows)
+            {
+                movableModalWindow.transform.position += diff;
+                foreach (NodeOutput no in movableModalWindow.gameObject.GetComponent<Node>().nodeOutputs)
+                {
+                    no.UpdateLineRenderers();
+                }
+            }
+            lastMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            return;
         }
         
     }

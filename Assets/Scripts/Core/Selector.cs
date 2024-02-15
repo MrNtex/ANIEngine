@@ -447,6 +447,7 @@ public class Selector : MonoBehaviour
         }
         ObjectBehaviour ob = itemSelectedPivot.AddComponent<ObjectBehaviour>();
         ob.amIParent = true;
+        itemSelectedPivot.AddComponent<ObjectScripting>();
         itemSelectedPivot = null;
     }
 

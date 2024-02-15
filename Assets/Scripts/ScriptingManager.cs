@@ -13,6 +13,8 @@ public class ScriptingManager : MonoBehaviour
     [SerializeField]
     private TMP_Text header;
 
+    [SerializeField]
+    private Selector selector;
     public void GoToScript()
     {
         GameObject obj = Selector.itemSelected;
@@ -37,6 +39,7 @@ public class ScriptingManager : MonoBehaviour
             }
             header.text = $"{obj.name}'s Script";
             objectScripting.script.SetActive(true);
+            selector.enabled = false;
         }
     }
     public void CloseScript()
