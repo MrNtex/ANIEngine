@@ -83,6 +83,16 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
                 //Debug.Log(input.GetComponent<InputOutputData>().inputType);
                 if(nodeInput.inputType == inputType)
                 {
+                    if(nodeInput.myNode == nodeOutput.myNode)
+                    {
+                        nodeOutput.DestroyLineRender(currentLineRender);
+                        return;
+                    }
+                    if (nodeInput.myNode.Inputs[nodeInput.inputID] != null)
+                    {
+                        nodeOutput.DestroyLineRender(currentLineRender);
+                        return;
+                    }
                     Debug.Log($"NodeInput: {nodeInput.myNode}, transfrom {input.transform}, sourceId: {sourceId}, targetId {nodeInput.inputID}, NOT: {isNotConnection}");
                     nodeOutput.CreateConnection(nodeInput, input.transform, sourceId, input.GetComponent<NodeInput>().inputID, isNotConnection, currentLineRender);
                     nodeOutput.SetPositions((Vector2)eventData.pointerCurrentRaycast.gameObject.transform.position, currentLineRender); // Set the line to the input position
