@@ -120,7 +120,7 @@ public class Connector : MonoBehaviour, IPointerDownHandler, IDragHandler, IPoin
 
             Vector3 currentMousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
             Vector3 diff = lastMousePosition - currentMousePosition;
-            diff *= .7f;
+            diff *= -1f;
             Debug.Log(diff);
             foreach (MovableModalWindow movableModalWindow in movableModalWindows)
             {
